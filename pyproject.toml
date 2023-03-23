@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "lambda-layer"
+version = "0.1.0"
+description = ""
+authors = ["MMartin09 <mmartin09@outlook.at>"]
+readme = "README.md"
+packages = [{include = "lambda_layer"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^1.10.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
