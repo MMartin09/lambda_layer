@@ -4,16 +4,11 @@ import shutil
 import subprocess
 import sys
 from functools import reduce
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 import boto3
-from pydantic import BaseModel
 
-
-class LayerConfig(BaseModel):
-    name: str
-    description: Optional[str]
-    requirements_file: str
+from src.models.layer_config import LayerConfig
 
 
 def camel_to_snake_case(val: str) -> str:
@@ -34,8 +29,10 @@ def install_requirements(requirements_file: str, archive_file: str) -> None:
 
 
 def compress_archive(archive_name: str, archive_source: str) -> None:
+    pathname, _ = os.path.splitext(archive_name)
+
     shutil.make_archive(
-        base_name=archive_name,
+        base_name=pathname,
         format="zip",
         root_dir=archive_source
     )
@@ -50,12 +47,8 @@ def upload_layer(client, config: LayerConfig, archive_name: str) -> None:
         Content={
             'ZipFile': layer_content
         },
-        CompatibleRuntimes=[
-            'python3.8', 'python3.9'
-        ],
-        CompatibleArchitectures=[
-            'x86_64', 'arm64'
-        ]
+        CompatibleRuntimes=config.compatible_runtimes,
+        CompatibleArchitectures=config.compatible_architectures
     )
     print(response)
 
@@ -69,13 +62,15 @@ def main():
         layer_obj = LayerConfig(**layer)
 
         requirements_file = os.path.join(requirements_directory, layer_obj.requirements_file)
-        archive_file = "../example/my_archive/"
-        archive_name = os.path.join("../example", camel_to_snake_case(layer_obj.name))
+        requirements_dir = "../example/requirements_dir/"
+        requirements_archive = os.path.join("../example", camel_to_snake_case(layer_obj.name) + ".zip")
 
-        install_requirements(requirements_file, archive_file)
-        compress_archive(archive_name, archive_file)
-        shutil.rmtree(archive_file)
-        upload_layer(lambda_client, layer_obj, archive_name)
+        install_requirements(requirements_file, requirements_dir)
+        compress_archive(requirements_archive, requirements_dir)
+        upload_layer(lambda_client, layer_obj, requirements_archive)
+
+        shutil.rmtree(requirements_dir)
+        os.remove(requirements_archive)
 
 
 if __name__ == "__main__":

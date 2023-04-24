@@ -1,0 +1,16 @@
+{
+  "layers": [
+    {
+      "name": "restApiLayer",
+      "description": "Requirements for FastAPI backend",
+      "requirements_file": "rest_api_layer.txt",
+      "compatible_runtimes": [
+        "python3.9",
+        "python3.10"
+      ],
+      "compatible_architectures": [
+        "x86_64"
+      ]
+    }
+  ]
+}
