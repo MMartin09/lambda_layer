@@ -3,21 +3,15 @@ import os.path
 import shutil
 import subprocess
 import sys
-from functools import reduce
 from typing import Dict
 
-import boto3
-
+from src.managers.lambda_function import LambdaFunctionManager
 from src.models.layer_config import LayerConfig
+from src.utils import camel_to_snake_case
 
 
-def camel_to_snake_case(val: str) -> str:
-    """Convert a given string from Camel Case to Snake Case."""
-    return reduce(lambda x, y: x + ("_" if y.isupper() else "") + y, val).lower()
-
-
-def load_layer_config() -> Dict:
-    with open("../example/layer_config.json", "r") as config_file:
+def load_layer_config(file_path: str) -> Dict:
+    with open(file_path) as config_file:
         layer_config = json.load(config_file)
 
     return layer_config
@@ -45,24 +39,10 @@ def compress_archive(archive_name: str, archive_source: str) -> None:
     shutil.make_archive(base_name=pathname, format="zip", root_dir=archive_source)
 
 
-def upload_layer(client, config: LayerConfig, archive_name: str) -> None:
-    layer_content = open(archive_name, "rb").read()
-
-    response = client.publish_layer_version(
-        LayerName=config.name,
-        Description=config.description,
-        Content={"ZipFile": layer_content},
-        CompatibleRuntimes=config.compatible_runtimes,
-        CompatibleArchitectures=config.compatible_architectures,
-    )
-    print(response)
-
-
 def main():
     requirements_directory = "../example/requirements/"
-    lambda_client = boto3.client("lambda")
 
-    layer_config = load_layer_config()
+    layer_config = load_layer_config("../example/layer_config.json")
     for layer in layer_config["layers"]:
         layer_obj = LayerConfig(**layer)
 
@@ -76,7 +56,9 @@ def main():
 
         install_requirements(requirements_file, requirements_dir)
         compress_archive(requirements_archive, requirements_dir)
-        upload_layer(lambda_client, layer_obj, requirements_archive)
+
+        lambda_function_manager = LambdaFunctionManager()
+        lambda_function_manager.upload_layer(layer_obj, requirements_archive)
 
         shutil.rmtree(requirements_dir)
         os.remove(requirements_archive)
