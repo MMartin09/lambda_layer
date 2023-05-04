@@ -7,3 +7,20 @@
 ## Overview
 
 Automatically build and deploy AWS Lambda layer.
+
+**Config:**
+```json
+{
+    "layers": [
+        {
+            "requirements": <path_to_requirements_file>,
+            "config": {
+                "name": <name_of_the_layer>,
+                "description": <description>,
+                "compatible_runtimes": [],
+                "compatible_architectures": []
+            }
+        }
+    ]
+}
+```
