@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import tempfile
 from typing import Dict
 
 from src.managers.lambda_function import LambdaFunctionManager
@@ -41,30 +42,29 @@ def compress_archive(archive_name: str, archive_source: str) -> None:
 
 
 def main():
-    # requirements_directory = "../example/requirements/"
-
     layer_config_file = "../example/layer_config.json"
+
     layer_config = load_layer_config(layer_config_file)
     for layer in layer_config["layers"]:
         requirements_file = pathlib.Path(
             os.path.join(os.path.dirname(layer_config_file), layer["requirements"])
         )
 
-        layer_obj = LayerConfig(**layer["config"])
+        layer_obj = LayerConfig(name=layer["name"], **layer["config"])
 
-        requirements_dir = "../example/requirements_dir/"
+        temp_install_dir = tempfile.TemporaryDirectory()
+
         requirements_archive = os.path.join(
-            "../example", camel_to_snake_case(layer_obj.name) + ".zip"
+            temp_install_dir.name, camel_to_snake_case(layer_obj.name) + ".zip"
         )
 
-        install_requirements(str(requirements_file), requirements_dir)
-        compress_archive(requirements_archive, requirements_dir)
+        install_requirements(str(requirements_file), temp_install_dir.name)
+        compress_archive(requirements_archive, temp_install_dir.name)
 
         lambda_function_manager = LambdaFunctionManager()
         lambda_function_manager.upload_layer(layer_obj, requirements_archive)
 
-        shutil.rmtree(requirements_dir)
-        os.remove(requirements_archive)
+        temp_install_dir.cleanup()
 
 
 if __name__ == "__main__":
