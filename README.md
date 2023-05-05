@@ -13,12 +13,12 @@ Automatically build and deploy AWS Lambda layer.
 {
     "layers": [
         {
-            "requirements": <path_to_requirements_file>,
+            "name": "<name_of_the_layer>",
+            "requirements": "<path_to_requirements_file>",
             "config": {
-                "name": <name_of_the_layer>,
-                "description": <description>,
-                "compatible_runtimes": [],
-                "compatible_architectures": []
+                "description": "<description>",
+                "compatible_runtimes": ["<python3.10>"],
+                "compatible_architectures": ["<x86_64>"]
             }
         }
     ]
