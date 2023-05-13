@@ -11,20 +11,37 @@ Automatically build and deploy AWS Lambda layer.
 **Config:**
 ```json
 {
-    "layers": [
-        {
-            "name": "<name_of_the_layer>",
-            "requirements": "<path_to_requirements_file>",
-            "config": {
-                "description": "<description>",
-                "compatible_runtimes": ["<python3.10>"],
-                "compatible_architectures": ["<x86_64>"]
-            }
-        }
-    ]
+	"layers": [
+		{
+			"name": "<name_of_the_layer>",
+			"requirements": "<path_to_requirements_file>",
+			"config": {
+				"description": "<description>",
+				"compatible_runtimes": ["<python3.10>"],
+				"compatible_architectures": ["<x86_64>"]
+			}
+		}
+	]
 }
 ```
 
+An example configuration can be found in the `./example` directory.
+
 ## Quickstart
 
+Run the *Lambda Layer Manager* (*llm*) with the following command:
+```bash
+llm <path/to/config_file>
+```
+
 ## Contribution
+
+Install the dependencies:
+```bash
+poetry install
+```
+
+Enable the *pre-commit* hooks:
+```bash
+pre-commit install
+```

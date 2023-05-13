@@ -13,7 +13,10 @@ from src.utils import (
     load_layer_config,
 )
 
+app = typer.Typer()
 
+
+@app.command()
 def main(config_file: str):
     layer_config = load_layer_config(config_file)
     for layer in layer_config["layers"]:
@@ -39,4 +42,4 @@ def main(config_file: str):
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    app()

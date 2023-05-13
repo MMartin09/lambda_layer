@@ -6,6 +6,10 @@ authors = ["MMartin09 <mmartin09@outlook.at>"]
 readme = "README.md"
 packages = [{include = "src"}]
 
+[tool.poetry.scripts]
+llm = "src.main:app"
+
+
 [tool.poetry.dependencies]
 python = "^3.11"
 pydantic = "^1.10.7"
