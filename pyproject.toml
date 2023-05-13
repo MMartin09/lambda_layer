@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "lambda-layer"
 version = "0.1.0"
-description = ""
+description = "Automatic Lambda Layer Manager"
 authors = ["MMartin09 <mmartin09@outlook.at>"]
 readme = "README.md"
+license = "MIT"
+repository  = "https://github.com/MMartin09/lambda_layer"
 packages = [{include = "src"}]
 
 [tool.poetry.scripts]
