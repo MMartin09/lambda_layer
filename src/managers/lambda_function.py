@@ -21,13 +21,16 @@ class LambdaFunctionManager:
 
         layer_content = open(archive_name, "rb").read()
 
-        response = self.client.publish_layer_version(
-            LayerName=config.name,
-            Description=config.description,
-            Content={"ZipFile": layer_content},
-            CompatibleRuntimes=config.compatible_runtimes,
-            CompatibleArchitectures=config.compatible_architectures,
-        )
+        data = {
+            "LayerName": config.name,
+            "Content": {"ZipFile": layer_content},
+            "CompatibleRuntimes": config.compatible_runtimes,
+            "CompatibleArchitectures": config.compatible_architectures,
+        }
 
+        if config.description:
+            data["Description"] = config.description
+
+        response = self.client.publish_layer_version(**data)  # type: ignore[arg-type]
         if response["ResponseMetadata"]["HTTPStatusCode"] != 201:
             raise Exception
